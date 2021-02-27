@@ -32,6 +32,16 @@ def stoplist_removal(tokens: list, stoplist: list):
     return tokens
 
 
+def phrase_detection(tokens: list, phrase: dict):
+    length_tokens = len(tokens)
+    for token_index in range(length_tokens - 1):
+        for phrase_key in list(phrase.keys()):
+            if tokens[token_index] == phrase_key and (token_index + 1) <= length_tokens and (tokens[token_index+1] in phrase[phrase_key]):
+                tokens[token_index] = f'{tokens[token_index]} {tokens[token_index+1]}'
+                tokens.pop(token_index+1)
+    return tokens
+
+
 def porter_algorithm(tokens: list, rule: dict):
     # issue makan -> ma
     for token_index in range(len(tokens)):
@@ -88,6 +98,11 @@ def main():
         '^me': '',
         '^ber': ''
     }
+    phrase = {
+        'sapu': ['tangan', 'lidi'],
+        'ilmu': ['komputer'],
+        'tanggung': ['jawab']
+    }
 
     documents = get_document()
     if documents is None:
@@ -98,6 +113,7 @@ def main():
         documents[document_index] = lexical_analysis(documents[document_index])
         documents[document_index] = stoplist_removal(documents[document_index], stoplist)
         documents[document_index] = porter_algorithm(documents[document_index], dict_rule)
+        documents[document_index] = phrase_detection(documents[document_index], phrase)
         print(f'document {document_index}: {documents[document_index]}')
 
 
