@@ -25,10 +25,8 @@ def lexical_analysis(document: str):
 
 def stoplist_removal(tokens: list, stoplist: list):
     for term in stoplist:
-        try:
+        if term in tokens:
             tokens.remove(term)
-        finally:
-            continue
     return tokens
 
 
