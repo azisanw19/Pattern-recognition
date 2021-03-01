@@ -52,7 +52,7 @@ Untuk menghapus kata yang tidak merepresentasikan makna seperti adalah, dan, dsb
 
 ## Porter Algorithm
 
-- untuk melakukan semmatization saya menggunakan porter algoritma dan saya tambahkan cara untuk menangani kata yang seperti imbuhan tetapi bukan imbuhan dengan menggunakan data imbuhan yang beririsan dengan kata dasar. Contohnya makan -> seperti ada imbuhan -kan tetapi bukan imbuhan.
+- untuk melakukan stemming saya menggunakan porter algoritma dan saya tambahkan cara untuk menangani kata yang seperti imbuhan tetapi bukan imbuhan dengan menggunakan data imbuhan yang beririsan dengan kata dasar. Contohnya makan -> seperti ada imbuhan -kan tetapi bukan imbuhan.
 
 - Format rule
 
