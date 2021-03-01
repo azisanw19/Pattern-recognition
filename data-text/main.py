@@ -40,12 +40,30 @@ def phrase_detection(tokens: list, phrase: dict):
     return tokens
 
 
-def porter_algorithm(tokens: list, rule: dict):
-    # issue makan -> ma
+def lemma_checker(word: str, dict_word: dict):
+    for key in list(dict_word.keys()):
+        try:
+            temp = re.search(key, word)
+            if temp:
+                for term in dict_word[key]:
+                    temp2 = re.search(term, word)
+                    if temp2:
+                        return term
+        except ValueError:
+            continue
+    return
+
+
+def porter_algorithm(tokens: list, rule: dict, dict_word: dict):
     for token_index in range(len(tokens)):
         for key in list(rule.keys()):
             try:
-                tokens[token_index] = re.sub(key, rule[key], tokens[token_index])
+                # Check lemma issue makan -> ma
+                lemma = lemma_checker(tokens[token_index], dict_word)
+                if lemma is not None:
+                    tokens[token_index] = lemma
+                else:
+                    tokens[token_index] = re.sub(key, rule[key], tokens[token_index])
             finally:
                 continue
     return tokens
@@ -55,7 +73,7 @@ def bag_of_word(documents: list):
     words = []
     for document in documents:
         words += document
-    # Remove duplicate
+    # Remove duplicate & order not important
     return list(set(words))
 
 
@@ -82,7 +100,53 @@ def combine_TFIDF(TF: list, IDF: list):
     return TFIDF
 
 
-def main():
+def main(stoplist: list, dict_rule: dict, dict_word: dict, phrase: dict):
+
+    # Mendapatkan input document
+    documents = get_document()
+    if documents is None:
+        return
+
+    # Melakukan preprocessing
+    print(f'\n\nResult preprocessing')
+    for document_index in range(len(documents)):
+        documents[document_index] = lexical_analysis(documents[document_index])
+        documents[document_index] = stoplist_removal(documents[document_index], stoplist)
+        documents[document_index] = porter_algorithm(documents[document_index], dict_rule, dict_word)
+        documents[document_index] = phrase_detection(documents[document_index], phrase)
+        print(f'document {document_index}: {documents[document_index]}')
+
+    # Mencari Bag of Words
+    bow = bag_of_word(documents)
+    print(f'\n\n\nbag of word: {bow}')
+    # Menghitung Term Frequency
+    score_TF = [list() for _ in range(len(documents))]
+    for document_index in range(len(documents)):
+        score_TF[document_index] = term_frequency(documents[document_index], bow)
+        print(f'document {document_index}: {score_TF[document_index]}')
+
+    print(f'\n\n')
+    # Menghitung Total Term Frequency
+    total_TF = [0 for _ in range(len(bow))]
+    for TF in score_TF:
+        for total_TF_index in range(len(total_TF)):
+            total_TF[total_TF_index] += TF[total_TF_index]
+
+    # Menghitung Inverse Document Frequency
+    score_IDF = inverse_document_frequency(total_TF, len(documents))
+
+    # Mengkombinasikan TF dan IDF
+    score_TFIDF = [list() for _ in range(len(score_TF))]
+    for TF_index in range(len(score_TF)):
+        score_TFIDF[TF_index] = combine_TFIDF(score_TF[TF_index], score_IDF)
+
+    # Melakukan print hasil TF IDF
+    for score_index in range(len(score_TFIDF)):
+        score_TFIDF[score_index] = ['%.2f' % elem for elem in score_TFIDF[score_index]]
+        print(f'document {score_index}: {score_TFIDF[score_index]}')
+
+
+if __name__ == '__main__':
     stoplist = ['adalah', 'sudah', 'untuk', 'sang', 'si', 'yang', 'dan']
     dict_rule = {
         'kah$': '',
@@ -94,47 +158,16 @@ def main():
         'kan$': '',
         'an$': '',
         '^me': '',
-        '^ber': ''
+        '^ber': '',
+        '^se': ''
+    }
+    dict_word = {
+        'kan$': ['makan'],
+        'an$': ['makan', 'minum', 'jangan']
     }
     phrase = {
         'sapu': ['tangan', 'lidi'],
         'ilmu': ['komputer'],
         'tanggung': ['jawab']
     }
-
-    documents = get_document()
-    if documents is None:
-        return
-
-    print(f'Result preprocessing')
-    for document_index in range(len(documents)):
-        documents[document_index] = lexical_analysis(documents[document_index])
-        documents[document_index] = stoplist_removal(documents[document_index], stoplist)
-        documents[document_index] = porter_algorithm(documents[document_index], dict_rule)
-        documents[document_index] = phrase_detection(documents[document_index], phrase)
-        print(f'document {document_index}: {documents[document_index]}')
-
-
-    bow = bag_of_word(documents)
-    score_TF = [list() for _ in range(len(documents))]
-    for document_index in range(len(documents)):
-        score_TF[document_index] = term_frequency(documents[document_index], bow)
-
-    total_TF = [0 for _ in range(len(bow))]
-    for TF in score_TF:
-        for total_TF_index in range(len(total_TF)):
-            total_TF[total_TF_index] += TF[total_TF_index]
-
-    score_IDF = inverse_document_frequency(total_TF, len(documents))
-
-    score_TFIDF = [list() for _ in range(len(score_TF))]
-    for TF_index in range(len(score_TF)):
-        score_TFIDF[TF_index] = combine_TFIDF(score_TF[TF_index], score_IDF)
-
-    print(f'bag of word: {bow}')
-    for score_index in range(len(score_TFIDF)):
-        print(f'document {score_index}: {score_TFIDF[score_index]}')
-
-
-if __name__ == '__main__':
-    main()
+    main(stoplist, dict_rule, dict_word, phrase)
