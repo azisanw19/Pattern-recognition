@@ -1,0 +1,6 @@
+# Editor cache
+.idea
+.ipynb_checkpoints
+
+lib
+lib64
