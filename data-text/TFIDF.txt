@@ -1,0 +1,35 @@
+d1 = "Jangan makan nasi banyak-banyak"
+d2 = "Jangan minum minuman bersoda"
+d3 = "Makan dan minum sebaiknya duduk"
+d4 = "Jangan memakan makanan yang sudah basi"
+d5 = "Makanlah makanan yang bergizi"
+
+Menentukan Bag of Word (Term Index)
+
+TF
+Bow = [jangan, makan, nasi, banyak, minum, soda, baik, duduk, sudah, basi, gizi]
+d1  = [1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0]
+d2  = [1, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0]
+d3  = [0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0]
+d4  = [1, 2, 0, 0, 0, 0, 0, 0, 1, 1, 0]
+d5  = [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+
+IDF
+IDF(jangan)	= 1 + log(5/3) = 1 + 0.22 = 1.22
+IDF(makan)	= 1 + log(5/6) = 1 - 0.07 = 0.93
+IDF(nasi)	= 1 + log(5/1) = 1 + 0.70 = 1.70
+IDF(banyak)	= 1 + log(5/2) = 1 + 0.40 = 1.40
+IDF(minum)	= 1 + log(5/3) = 1 + 0.22 = 1.22
+IDF(soda)	= 1.70
+IDF(baik)	= 1.70
+IDF(duduk)	= 1.70
+IDF(sudah)	= 1.70
+IDF(basi)	= 1.70
+IDF(gizi)	= 1.70
+
+TFIDF
+d1 = [1.22, 0.93, 1.70, 2.80, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+d2 = [1.22, 0.00, 0.00, 0.00, 2.44, 1.70, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]
+d3 = [0.00, 0.93, 0.00, 0.00, 1.22, 0.00, 1.70, 1.70, 0.00, 0.00, 0.00, 0.00]
+d4 = [1.22, 1.86, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.70, 1.70, 0.00]
+d5 = [0.00, 1.86, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.70]
